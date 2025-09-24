@@ -1,0 +1,16 @@
+[package]
+name = "tui-cli-wrapper"
+version = "0.1.0"
+authors = ["chris.anatalio <anataliocs@gmail.com>"]
+license = "MIT"
+edition = "2021"
+
+[dependencies]
+crossterm = { version = "0.28.1", features = ["event-stream"] }
+futures = "0.3.31"
+ratatui = "0.29.0"
+tokio = { version = "1.40.0", features = ["full"] }
+strum = "0.26.3"
+serde = { version = "1.0.217", features = ["derive"] }
+xshell = "0.3.0-pre.2"
+anyhow = "1.0.95"
