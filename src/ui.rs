@@ -90,39 +90,22 @@ pub(crate) mod layout {
             match app.selected_tab {
                 Tab1 => list_factory(
                     vec![
-                        ListItem::new("Extend Instance TTL"),
-                        ListItem::new("Extend Persistence TTL"),
-                        ListItem::new("Extend Temporary TTL"),
-                        ListItem::new("Generate Data Key"),
+                        ListItem::new("Filter by Block Hash"),
+                        ListItem::new("Filter by Block Height"),
                     ],
-                    "Extend TTL Scripts",
+                    "Explorer Commands",
                 ),
                 Tab2 => list_factory(
-                    vec![
-                        ListItem::new("Restore Persistent Storage"),
-                        ListItem::new("Restore Contract Instance"),
-                        ListItem::new("Restore Contract Code Hash"),
-                        ListItem::new("Restore Instance Storage"),
-                    ],
-                    "Restore Archived Data Scripts",
+                    vec![ListItem::new("Query"), ListItem::new("Decode")],
+                    "Storage Commands",
                 ),
                 Tab3 => list_factory(
-                    vec![
-                        ListItem::new("Set Persistent Data"),
-                        ListItem::new("Set Instance Data"),
-                        ListItem::new("Extend Persistent TTL"),
-                        ListItem::new("Extend Instance TTL"),
-                    ],
-                    "Contract Invocation Scripts",
+                    vec![ListItem::new("Edit"), ListItem::new("JSON")],
+                    "Extrinsic Commands",
                 ),
                 Tab4 => list_factory(
-                    vec![
-                        ListItem::new("Show Contract Data"),
-                        ListItem::new("Show Invocations"),
-                        ListItem::new("Show Storage TTLs"),
-                        ListItem::new("Show Misc data"),
-                    ],
-                    "Display Contract Info Scripts",
+                    vec![ListItem::new("List"), ListItem::new("Tree")],
+                    "Constants Commands",
                 ),
             },
             bot_left,
