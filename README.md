@@ -10,7 +10,8 @@
 
 <p align="center">
   <a href="https://polkadot.com/developers/" target="blank"><img src="img/built-with-love-for-polkadot.svg" height="20" alt="Polkadot badge" /></a>
-  <a href="https://github.com/use-ink/ink" target="blank"><img src="https://raw.githubusercontent.com/use-ink/ink/master/.images/badge_flat.svg" alt="Polkadot badge" /></a>
+  <a href="https://github.com/use-ink/ink" target="blank"><img src="https://raw.githubusercontent.com/use-ink/ink/master/.images/badge_flat.svg" alt="ink! badge" /></a>
+  <a href="https://ratatui.rs/" target="blank"><img src="https://img.shields.io/badge/Built_With_Ratatui-000?logo=ratatui&logoColor=fff" alt="Ratatui badge" /></a>
 </p>
 
 ----
