@@ -17,7 +17,7 @@ cargo run --color=always --package tui-cli-wrapper --bin tui-cli-wrapper --profi
 
 > ℹ️ Don't see the TUI?  Try expanding the size of your console and scrolling up or down. 
 
-<img width="1343" height="472" alt="image" src="https://github.com/user-attachments/assets/bd1d66db-1967-4b86-9c2b-8380e2d4cf14" />
+<img width="1437" height="378" alt="image" src="https://github.com/user-attachments/assets/9de399a9-21d8-4353-bf5f-291d57c536fd" />
 
 **Controls**
 - Use arrows ⬆️⬇️⬅️➡️ to navigate Terminal user interface
