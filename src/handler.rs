@@ -1,19 +1,22 @@
 use std::sync::Arc;
 
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
-use futures::{SinkExt, TryFutureExt};
 use ratatui::text::Line;
 use ratatui::widgets::ScrollDirection;
 
 use StellarCliCmdName::{Env, ReadContractDataWasm, Version};
 
 use crate::app::{App, AppResult, ListStates};
-use crate::commands::commands::{CmdResponse, execute, StellarCliCmdName};
 use crate::commands::commands::StellarCliCmdName::NetworkToggle;
+use crate::commands::commands::{execute, CmdResponse, StellarCliCmdName};
 use crate::event::{Event, EventHandler, UiUpdateContent, UiWidget};
 
 /// Handles the key events and updates the state of [`App`].
-pub fn handle_key_events(key_event: &KeyEvent, app: &mut App, event_handler: Arc<&EventHandler>) -> AppResult<()> {
+pub fn handle_key_events(
+    key_event: &KeyEvent,
+    app: &mut App,
+    event_handler: Arc<&EventHandler>,
+) -> AppResult<()> {
     match key_event.code {
         // Exit application on `ESC` or `q`
         KeyCode::Esc | KeyCode::Char('q') => {
@@ -40,7 +43,9 @@ pub fn handle_key_events(key_event: &KeyEvent, app: &mut App, event_handler: Arc
         }
 
         KeyCode::Tab => {
-            app.cmd_output_state.cmd_output_scrollbar.scroll(ScrollDirection::Forward);
+            app.cmd_output_state
+                .cmd_output_scrollbar
+                .scroll(ScrollDirection::Forward);
         }
 
         KeyCode::Delete => {
@@ -52,34 +57,50 @@ pub fn handle_key_events(key_event: &KeyEvent, app: &mut App, event_handler: Arc
             // Run the command with a timeout
             let res: CmdResponse = execute(NetworkToggle);
 
-            app.cmd_output_state.cmd_output.push_line(Line::raw(res.raw_cmd.to_string()));
-            app.cmd_output_state.cmd_output.push_line(Line::raw(res.result));
+            app.cmd_output_state
+                .cmd_output
+                .push_line(Line::raw(res.raw_cmd.to_string()));
+            app.cmd_output_state
+                .cmd_output
+                .push_line(Line::raw(res.result));
 
-            &event_handler.as_ref()
-                          .send(Event::UiUpdate(
-                              UiUpdateContent::new(UiWidget::CmdOutput,
-                                                   String::from("Result"),
-                                                   String::from("Network: Local"))))
-                          .unwrap_or_else(|e| { drop(e); });
+            let _ = &event_handler
+                .as_ref()
+                .send(Event::UiUpdate(UiUpdateContent::new(
+                    UiWidget::CmdOutput,
+                    String::from("Result"),
+                    String::from("Network: Local"),
+                )))
+                .unwrap_or_else(|e| {
+                    drop(e);
+                });
 
             match stellar_cli_cmd_name {
                 Version => {}
                 Env => {}
                 ReadContractDataWasm => {}
                 NetworkToggle => {
-                    &event_handler.as_ref()
-                                  .send(Event::UiUpdate(
-                                      UiUpdateContent::new(UiWidget::Network,
-                                                           String::from("Update"),
-                                                           String::from("Network: Local"))))
-                                  .unwrap_or_else(|e| { e; });
+                    let _ = &event_handler
+                        .as_ref()
+                        .send(Event::UiUpdate(UiUpdateContent::new(
+                            UiWidget::Network,
+                            String::from("Update"),
+                            String::from("Network: Local"),
+                        )))
+                        .unwrap_or_else(|e| {
+                            drop(e);
+                        });
 
-                    &event_handler.as_ref()
-                                  .send(Event::UiUpdate(
-                                      UiUpdateContent::new(UiWidget::Network,
-                                                           String::from("Result"),
-                                                           String::from("Connect to local Stellar Network"))))
-                                  .unwrap_or_else(|e| { e; });
+                    let _ = &event_handler
+                        .as_ref()
+                        .send(Event::UiUpdate(UiUpdateContent::new(
+                            UiWidget::Network,
+                            String::from("Result"),
+                            String::from("Connect to local Stellar Network"),
+                        )))
+                        .unwrap_or_else(|e| {
+                            drop(e);
+                        });
                 }
             }
         }

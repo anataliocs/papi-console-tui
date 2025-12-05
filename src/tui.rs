@@ -48,10 +48,11 @@ impl<B: Backend> Tui<B> {
 
     /// [`Draw`] the terminal interface by [`rendering`] the widgets.
     ///
-    /// [`Draw`]: ratatui::Terminal::draw
+    /// [`Draw`]: Terminal::draw
     /// [`rendering`]: crate::ui::render
     pub fn draw(&mut self, app: &mut App) -> AppResult<()> {
-        self.terminal.draw(|frame| render(app, frame, UiUpdateContent::default()))?;
+        self.terminal
+            .draw(|frame| render(app, frame, UiUpdateContent::default()))?;
         Ok(())
     }
 

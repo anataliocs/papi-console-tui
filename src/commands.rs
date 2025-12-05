@@ -1,20 +1,14 @@
-use std::time::Duration;
-
-use xshell::{cmd, Shell};
-
-use crate::commands::commands::{CmdResponse, StellarCliCmd, StellarCliCmdName};
-
 pub mod commands {
+    use crate::commands::commands::StellarCliCmdName::{ReadContractDataWasm, Version};
     use std::time::Duration;
     use xshell::{cmd, Shell};
     use StellarCliCmdName::{Env, NetworkToggle};
-    use crate::commands::commands::StellarCliCmdName::{ReadContractDataWasm, Version};
 
     pub enum StellarCliCmdName {
         Version,
         Env,
         ReadContractDataWasm,
-        NetworkToggle
+        NetworkToggle,
     }
 
     impl StellarCliCmdName {
@@ -23,19 +17,21 @@ pub mod commands {
                 Version => {
                     let version = "--version";
                     StellarCliCmd::new(Version, cmd!(get_shell(), "stellar {version}"))
-                },
+                }
                 Env => {
                     let options = "--global";
                     StellarCliCmd::new(Version, cmd!(get_shell(), "stellar env {options}"))
-                },
+                }
                 ReadContractDataWasm => {
                     let options = "--output json --id CBQDHNBFBZYE4MKPWBSJOPIYLW4SFSXAXUTSXJN76GNKYVYPCKWC6QUK --wasm 26c495019afb7448f690a82d6e66d8fab1ad3fd3e7b4aec7d554209966c9d19d --durability persistent";
-                    StellarCliCmd::new(Version, cmd!(get_shell(), "stellar contract read {options}"))
+                    StellarCliCmd::new(
+                        Version,
+                        cmd!(get_shell(), "stellar contract read {options}"),
+                    )
                 }
                 NetworkToggle => {
                     StellarCliCmd::new(Version, cmd!(get_shell(), "stellar network use local"))
                 }
-
             }
         }
     }
@@ -53,10 +49,10 @@ pub mod commands {
             }
         }
     }
-    
+
     pub struct CmdResponse {
         pub raw_cmd: xshell::Cmd,
-        pub result: String
+        pub result: String,
     }
 
     impl CmdResponse {
@@ -66,16 +62,15 @@ pub mod commands {
     }
 
     pub fn execute(stellar_cli_cmd: StellarCliCmdName) -> CmdResponse {
-        let cmd =  command_factory(&stellar_cli_cmd);
-
+        let cmd = command_factory(&stellar_cli_cmd);
 
         // Run the command with a timeout
-        let res = cmd.cmd_slug.clone()
-                        .timeout(Duration::from_secs(3))
-                        .read()
-                        .unwrap_or_else(|_e| {
-                            "".parse().unwrap()
-                        });
+        let res = cmd
+            .cmd_slug
+            .clone()
+            .timeout(Duration::from_secs(3))
+            .read()
+            .unwrap_or_else(|_e| "".parse().unwrap());
 
         CmdResponse::new(cmd.cmd_slug, res)
     }
@@ -88,4 +83,3 @@ pub mod commands {
         StellarCliCmdName::get_cmd(stellar_cli_cmd)
     }
 }
-

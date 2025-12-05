@@ -1,19 +1,10 @@
-use std::cell::RefCell;
-use std::fmt::Display;
-use std::os::unix::raw::time_t;
-use std::ptr::addr_of_mut;
-use std::rc::Rc;
-use std::sync::Arc;
-use std::time::{Duration, SystemTime};
+use std::time::Duration;
 
 use crossterm::event::{Event as CrosstermEvent, KeyEvent, MouseEvent};
-use futures::{FutureExt, pin_mut, SinkExt, StreamExt, TryFutureExt};
+use futures::{FutureExt, SinkExt, StreamExt, TryFutureExt};
 use tokio::sync::mpsc;
-use tokio::time::error::Elapsed;
-use tokio::time::Instant;
 
 use crate::app::AppResult;
-use crate::event::Event::Tick;
 
 /// Terminal events.
 #[derive(Clone, Debug)]
@@ -49,7 +40,11 @@ pub struct UiUpdateContent {
 
 impl UiUpdateContent {
     pub fn new(ui_widget: UiWidget, ui_key: String, ui_update_content: String) -> Self {
-        Self { ui_widget, ui_key, ui_update_content }
+        Self {
+            ui_widget,
+            ui_key,
+            ui_update_content,
+        }
     }
 }
 
@@ -123,8 +118,7 @@ impl EventHandler {
                       },
                     }
                   }
-                }
-                ;
+                };
             }
         });
         Self {
@@ -149,8 +143,9 @@ impl EventHandler {
     }
 
     pub fn send(&self, event: Event) -> AppResult<()> {
-        self.sender.send(event).map(|e| { e })
-            .unwrap_or_else(|e1| { e1; });
+        self.sender.send(event).map(|e| e).unwrap_or_else(|e1| {
+            e1;
+        });
 
         Ok(())
     }

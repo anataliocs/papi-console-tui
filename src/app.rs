@@ -1,18 +1,17 @@
-use std::error;
-use std::fmt::Debug;
-
+use ratatui::prelude::Color;
 use ratatui::style::palette::tailwind;
 use ratatui::style::{Modifier, Style, Stylize};
-use ratatui::text::{Line, Text, ToText};
+use ratatui::text::{Line, Text};
 pub(crate) use ratatui::widgets::ListState;
 use ratatui::widgets::ScrollbarState;
+use std::error;
+use std::fmt::Debug;
 use strum::{Display, EnumIter, FromRepr};
 
 use crate::app::SelectedTab::{Tab1, Tab2, Tab3, Tab4};
-use crate::ui::layout::CmdOutputScrollbar;
 
 /// Application result type.
-pub type AppResult<T> = std::result::Result<T, Box<dyn error::Error>>;
+pub type AppResult<T> = Result<T, Box<dyn error::Error>>;
 
 pub struct ListStates {
     pub list_state: ListState,
@@ -23,10 +22,7 @@ pub struct ListStates {
 }
 
 impl ListStates {
-    pub fn select_next(
-        selected_tab: SelectedTab,
-        list_states: &mut Box<ListStates>,
-    ) {
+    pub fn select_next(selected_tab: SelectedTab, list_states: &mut Box<ListStates>) {
         match selected_tab {
             Tab1 => ListState::select_next(&mut list_states.list_state),
             Tab2 => ListState::select_next(&mut list_states.list_state2),
@@ -35,10 +31,7 @@ impl ListStates {
         }
     }
 
-    pub fn select_prev(
-        selected_tab: SelectedTab,
-        list_states: &mut Box<ListStates>,
-    ) {
+    pub fn select_prev(selected_tab: SelectedTab, list_states: &mut Box<ListStates>) {
         match selected_tab {
             Tab1 => ListState::select_previous(&mut list_states.list_state),
             Tab2 => ListState::select_previous(&mut list_states.list_state2),
@@ -70,15 +63,19 @@ pub struct CmdOutputState<'a> {
     pub cmd_output: Box<Text<'a>>,
     pub network_status: Box<Text<'a>>,
     pub cmd_output_state: Box<ListState>,
-    pub cmd_output_scrollbar: Box<ScrollbarState>
+    pub cmd_output_scrollbar: Box<ScrollbarState>,
 }
 
 impl CmdOutputState<'static> {
     pub fn new<'a>(cmd_output: Box<Text<'static>>, cmd_output_state: Box<ListState>) -> Self {
         Self {
             cmd_output,
-            network_status: Box::new(Text::raw("Not Connected")
-                    .style(Style::default().add_modifier(Modifier::DIM))),
+            network_status: Box::new(
+                Text::raw("Not Connected")
+                    .style(Style::default().add_modifier(Modifier::DIM))
+                    .fg(Color::LightMagenta)
+                    .bg(Color::Black),
+            ),
             cmd_output_state,
             cmd_output_scrollbar: Box::new(ScrollbarState::new(100)),
         }
@@ -110,13 +107,13 @@ pub enum AppState {
 #[derive(Default, Clone, Copy, Display, FromRepr, EnumIter, Debug)]
 pub enum SelectedTab {
     #[default]
-    #[strum(to_string = "Extend TTL")]
+    #[strum(to_string = "Explorer")]
     Tab1,
-    #[strum(to_string = "Restore Archived Data")]
+    #[strum(to_string = "Storage")]
     Tab2,
-    #[strum(to_string = "Invoke Contract")]
+    #[strum(to_string = "Extrinsics")]
     Tab3,
-    #[strum(to_string = "Display Contract Info")]
+    #[strum(to_string = "Constants")]
     Tab4,
 }
 
@@ -147,10 +144,10 @@ impl SelectedTab {
 
     pub const fn palette(self) -> tailwind::Palette {
         match self {
-            Tab1 => tailwind::YELLOW,
-            Tab2 => tailwind::INDIGO,
-            Tab3 => tailwind::CYAN,
-            Tab4 => tailwind::GRAY,
+            Tab1 => tailwind::PINK,
+            Tab2 => tailwind::ROSE,
+            Tab3 => tailwind::RED,
+            Tab4 => tailwind::FUCHSIA,
         }
     }
 }

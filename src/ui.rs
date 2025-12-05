@@ -1,23 +1,21 @@
-use ratatui::style::{Styled, Stylize};
-use ratatui::text::ToText;
-use ratatui::widgets::StatefulWidget;
-use strum::IntoEnumIterator;
-
 pub(crate) mod layout {
-    use std::borrow::{Borrow, BorrowMut};
+    use std::borrow::BorrowMut;
 
     use ratatui::buffer::Buffer;
-    use ratatui::Frame;
     use ratatui::layout::{Alignment, Constraint, Layout, Rect};
     use ratatui::style::{Color, Modifier, Style, Styled, Stylize};
     use ratatui::symbols::scrollbar;
     use ratatui::text::Text;
-    use ratatui::widgets::{Block, BorderType, HighlightSpacing, List, ListItem, Padding, Paragraph, Scrollbar, ScrollbarOrientation, ScrollbarState, StatefulWidget, Tabs, Wrap};
+    use ratatui::widgets::{
+        Block, BorderType, HighlightSpacing, List, ListItem, Padding, Paragraph, Scrollbar,
+        ScrollbarOrientation, ScrollbarState, StatefulWidget, Tabs, Wrap,
+    };
+    use ratatui::Frame;
     use strum::IntoEnumIterator;
 
     use crate::app;
-    use crate::app::{App, SelectedTab};
     use crate::app::SelectedTab::{Tab1, Tab2, Tab3, Tab4};
+    use crate::app::{App, SelectedTab};
     use crate::event::{UiUpdateContent, UiUpdatePayload, UiWidget};
 
     /// Renders the user interface widgets.
@@ -40,7 +38,7 @@ pub(crate) mod layout {
         let [bot_right_console, bot_right_scroll] =
             Layout::horizontal([Constraint::Fill(2), Constraint::Max(2)]).areas(bot_right);
 
-        let titles = app::SelectedTab::iter().map(SelectedTab::title);
+        let titles = SelectedTab::iter().map(SelectedTab::title);
         let highlight_style = (Color::default(), app.selected_tab.palette().c950);
         let selected_tab_index = app.selected_tab as usize;
 
@@ -55,17 +53,19 @@ pub(crate) mod layout {
 
         render_network_widget(frame, &event1, top_right);
 
-
         frame.render_widget(
-            Tabs::new(titles).style(Style::default().add_modifier(Modifier::BOLD))
-                             .highlight_style(highlight_style)
-                             .select(selected_tab_index)
-                             .padding(" ", " ")
-                             .divider(" ")
-                             .block(Block::bordered().border_type(BorderType::Rounded)
-                                                     .bg(Color::DarkGray)
-                                                     .padding(Padding::horizontal(2))
-                             ),
+            Tabs::new(titles)
+                .style(Style::default().add_modifier(Modifier::BOLD))
+                .highlight_style(highlight_style)
+                .select(selected_tab_index)
+                .padding(" ", " ")
+                .divider(" ")
+                .block(
+                    Block::bordered()
+                        .border_type(BorderType::Rounded)
+                        .bg(Color::DarkGray)
+                        .padding(Padding::horizontal(2)),
+                ),
             top_left,
         );
 
@@ -74,15 +74,15 @@ pub(crate) mod layout {
                 "Press `Esc`, `Ctrl-C` or `q` to quit.\n\
                 Press left and right to move between tabs.\n",
             )
-                .block(
-                    Block::bordered()
-                        .title("Stellar Contract Explorer")
-                        .title_alignment(Alignment::Center)
-                        .title_style(Style::default().add_modifier(Modifier::BOLD))
-                        .border_type(BorderType::Rounded),
-                )
-                .style(Style::default().fg(Color::Yellow).bg(Color::Black))
-                .centered(),
+            .block(
+                Block::bordered()
+                    .title("PAPI Console")
+                    .title_alignment(Alignment::Center)
+                    .title_style(Style::default().add_modifier(Modifier::BOLD))
+                    .border_type(BorderType::Rounded),
+            )
+            .style(Style::default().fg(Color::LightMagenta).bg(Color::Black))
+            .centered(),
             top_area,
         );
 
@@ -127,31 +127,28 @@ pub(crate) mod layout {
             },
             bot_left,
             match selected_tab_index {
-                0 => {
-                    &mut app.list_states.list_state
-                }
-                1 => {
-                    &mut app.list_states.list_state2
-                }
-                2 => {
-                    &mut app.list_states.list_state3
-                }
-                3 => {
-                    &mut app.list_states.list_state4
-                }
-                _ => {
-                    &mut app.list_states.list_state
-                }
+                0 => &mut app.list_states.list_state,
+                1 => &mut app.list_states.list_state2,
+                2 => &mut app.list_states.list_state3,
+                3 => &mut app.list_states.list_state4,
+                _ => &mut app.list_states.list_state,
             },
         );
 
         render_cmd_output_window(frame, event1, bot_right_console);
 
-        CmdOutputScrollbar::default()
-            .render(bot_right_scroll, frame.buffer_mut(), &mut app.cmd_output_state.cmd_output_scrollbar);
+        CmdOutputScrollbar::default().render(
+            bot_right_scroll,
+            frame.buffer_mut(),
+            &mut app.cmd_output_state.cmd_output_scrollbar,
+        );
     }
 
-    fn render_cmd_output_window(frame: &mut Frame, event1: UiUpdateContent, bot_right_console: Rect) {
+    fn render_cmd_output_window(
+        frame: &mut Frame,
+        event1: UiUpdateContent,
+        bot_right_console: Rect,
+    ) {
         frame.render_widget(
             Paragraph::new(Text::raw(event1.ui_update_content()))
                 .left_aligned()
@@ -162,9 +159,10 @@ pub(crate) mod layout {
                         .title("Command Output")
                         .title_alignment(Alignment::Center)
                         .title_style(Style::default().add_modifier(Modifier::BOLD))
-                        .border_type(BorderType::Rounded).padding(Padding::symmetric(1, 1)),
+                        .border_type(BorderType::Rounded)
+                        .padding(Padding::symmetric(1, 1)),
                 )
-                .style(Style::default().fg(Color::Yellow).bg(Color::Black))
+                .style(Style::default().fg(Color::LightMagenta).bg(Color::Black))
                 .left_aligned(),
             bot_right_console,
         );
@@ -174,12 +172,17 @@ pub(crate) mod layout {
         frame.render_widget(
             Paragraph::new(Text::raw(event1.ui_update_content().to_string()))
                 .right_aligned()
-                .style(Style::default().add_modifier(Modifier::BOLD)
-                                       .bg(Color::DarkGray).fg(Color::Yellow))
-                .block(Block::bordered()
-                    .border_type(BorderType::Rounded)
-                    .padding(Padding::horizontal(2)
-                    )),
+                .style(
+                    Style::default()
+                        .add_modifier(Modifier::BOLD)
+                        .bg(Color::DarkGray)
+                        .fg(Color::LightMagenta),
+                )
+                .block(
+                    Block::bordered()
+                        .border_type(BorderType::Rounded)
+                        .padding(Padding::horizontal(2)),
+                ),
             top_right,
         );
     }
@@ -197,7 +200,8 @@ pub(crate) mod layout {
             .highlight_spacing(HighlightSpacing::Always)
             .block(
                 Block::bordered()
-                    .border_type(BorderType::Rounded).border_style(Style::default().fg(Color::Yellow))
+                    .border_type(BorderType::Rounded)
+                    .border_style(Style::default().fg(Color::LightMagenta))
                     .title(title)
                     .title_style(Style::default().add_modifier(Modifier::BOLD)),
             )
@@ -210,7 +214,7 @@ pub(crate) mod layout {
 
     impl CmdOutputScrollbar {
         pub fn scroll(mut self) {
-            &mut self.borrow_mut().scrollbar_state.next();
+            let _ = &mut self.borrow_mut().scrollbar_state.next();
         }
 
         pub fn set_scrollbar_state(&mut self, scrollbar_state: ScrollbarState) {
@@ -224,7 +228,9 @@ pub(crate) mod layout {
 
     impl Default for CmdOutputScrollbar {
         fn default() -> Self {
-            Self { /* fields */ scrollbar_state: Default::default() }
+            Self {
+                /* fields */ scrollbar_state: Default::default(),
+            }
         }
     }
 

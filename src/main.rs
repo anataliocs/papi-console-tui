@@ -32,23 +32,24 @@ async fn main() -> AppResult<()> {
     let mut tui = Tui::new(terminal);
 
     /*    let (broadcast_sender, broadcast_receiver) =
-            tokio::sync::broadcast::channel(100);*/
+    tokio::sync::broadcast::channel(100);*/
 
     tui.init()?;
 
-
     // Start the main loop.
     while app.running {
-
         // Handle events.
         match events.next().await? {
             Event::UiUpdate(content) => {
-                tui.draw_update(&mut app, content);
+                tui.draw_update(&mut app, content)
+                    .expect("TODO: panic message");
             }
             Event::Tick => app.tick(),
             Event::Key(key_event) => {
-                handle_key_events(&key_event, &mut app, Arc::new(events))
-                    .unwrap_or_else(|e| { AppResult::from(Result::<Event, Box<dyn StdError>>::Err(e)); });
+                handle_key_events(&key_event, &mut app, Arc::new(events)).unwrap_or_else(|e| {
+                    AppResult::from(Result::<Event, Box<dyn StdError>>::Err(e))
+                        .expect("TODO: panic message");
+                });
 
                 // Render the user interface.
                 tui.draw(&mut app)?;
